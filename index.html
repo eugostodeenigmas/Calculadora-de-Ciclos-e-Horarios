@@ -119,19 +119,20 @@
         return `${horas24}:${minutos}h <span class="badge">(${horas12}:${minutos} ${ampm})</span>`;
     }
 
-    function calcularHorarios() {
-        const horaInput = document.getElementById('horaInicial').value;
-        const intervalo = parseInt(document.getElementById('intervalo').value);
-        const listaResultados = document.getElementById('resultados');
+function calcularHorarios() {
+    const horaInput = document.getElementById('horaInicial').value;
+    const intervalo = parseInt(document.getElementById('intervalo').value);
+    const listaResultados = document.getElementById('resultados');
 
-        if (!horaInput || isNaN(intervalo)) {
-            alert("Por favor, preencha o horário e o intervalo.");
-            return;
-        }
+    // VALIDAÇÃO: Se o intervalo for menor que 1, ele avisa e para a execução
+    if (!horaInput || isNaN(intervalo) || intervalo <= 0) {
+        alert("Por favor, insira um intervalo maior que 0.");
+        return;
+    }
 
-        listaResultados.innerHTML = "<strong>Cronograma (24h):</strong>";
-
-        // Criar um objeto de data baseado no input
+    listaResultados.innerHTML = "<strong>Cronograma (24h):</strong>";
+    
+    // Criar um objeto de data baseado no input
         let dataAux = new Date();
         const [h, m] = horaInput.split(':');
         dataAux.setHours(h, m, 0);
