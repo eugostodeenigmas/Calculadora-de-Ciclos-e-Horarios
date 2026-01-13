@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Ciclos de Horários</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --bg: #f4f7f6;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 { text-align: center; color: var(--primary); }
+
+        .input-group { margin-bottom: 1.5rem; }
+
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box; /* Garante que o padding não quebre a largura */
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover { background-color: #357abd; }
+
+        #resultados {
+            margin-top: 20px;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+
+        .horario-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .horario-item:last-child { border-bottom: none; }
+        
+        .badge {
+            background: #e1ecf8;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>⏰ Calculadora de Ciclos</h2>
+    
+    <div class="input-group">
+        <label for="horaInicial">Horário de Início:</label>
+        <input type="time" id="horaInicial" value="15:00">
+    </div>
+
+    <div class="input-group">
+        <label for="intervalo">Intervalo (em horas):</label>
+        <input type="number" id="intervalo" placeholder="Ex: 3" min="1" max="24">
+    </div>
+
+    <button onclick="calcularHorarios()">Gerar Cronograma</button>
+
+    <div id="resultados">
+        </div>
+</div>
+
+<script>
+    function formatarAMPM(data) {
+        let horas = data.getHours();
+        let minutos = data.getMinutes();
+        const ampm = horas >= 12 ? 'PM' : 'AM';
+        
+        // Formato 12h
+        let horas12 = horas % 12;
+        horas12 = horas12 ? horas12 : 12; // a hora '0' deve ser '12'
+        
+        // Formato 24h para exibição dupla
+        const horas24 = horas.toString().padStart(2, '0');
+        minutos = minutos.toString().padStart(2, '0');
+
+        return `${horas24}:${minutos}h <span class="badge">(${horas12}:${minutos} ${ampm})</span>`;
+    }
+
+    function calcularHorarios() {
+        const horaInput = document.getElementById('horaInicial').value;
+        const intervalo = parseInt(document.getElementById('intervalo').value);
+        const listaResultados = document.getElementById('resultados');
+
+        if (!horaInput || isNaN(intervalo)) {
+            alert("Por favor, preencha o horário e o intervalo.");
+            return;
+        }
+
+        listaResultados.innerHTML = "<strong>Cronograma (24h):</strong>";
+
+        // Criar um objeto de data baseado no input
+        let dataAux = new Date();
+        const [h, m] = horaInput.split(':');
+        dataAux.setHours(h, m, 0);
+
+        // Gera o ciclo para as próximas 24 horas
+        let horasAcumuladas = 0;
+        while (horasAcumuladas <= 24) {
+            const div = document.createElement('div');
+            div.className = 'horario-item';
+            div.innerHTML = formatarAMPM(new Date(dataAux));
+            listaResultados.appendChild(div);
+
+            // Adiciona o intervalo
+            dataAux.setHours(dataAux.getHours() + intervalo);
+            horasAcumuladas += intervalo;
+        }
+    }
+</script>
+
+</body>
+</html>
